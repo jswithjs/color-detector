@@ -1,28 +1,33 @@
-r = int(input("r"))
-g = int(input("g"))
-b = int(input("b"))
+from operator import mul
 
-if r == 0 and g == 0 and b == 0 :
-    c = m = y = 0
-    black = 1
-else :
-    red = r/255
-    green = g/255
-    blue = b/255
+def RGBtoCMYK(r, g, b):
+    """
+    RGMtoCMYK
 
-    max = red
-    if green > max :
-        max = green
+    Converts an RGB Palette to a CMYK Palette
 
-    if blue > max :
-        max = blue
+    args: (int, int, int)
+    ret : (int, int, int, int)
+    """
+    if r & g & b == 0 :
+        return (0, 0, 0, 1)
 
-    white = max
+    percentile = lambda x: x / 255
 
-    c = (white - red) / white
-    m = (white - green) / white
-    y = (white - blue) / white
+    red   = percentile(r)
+    green = percentile(g)
+    blue  = percentile(b)
+    white = max([red, green, blue])
 
-    black = 1 - white
+    build_color = lambda x: round(  \
+        mul(                        \
+            (white - x) / white,    \
+            100                     \
+    ))
+    
+    c = build_color(red)
+    m = build_color(green)
+    y = build_color(blue)
+    k = round((1 - white) * 100)
 
-    print("c = " + str(c), "m = "  + str(m), "m = " + str(y), "k = " + str(black))
+    return (c, m, y, k)
