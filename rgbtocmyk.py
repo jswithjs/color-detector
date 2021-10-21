@@ -6,22 +6,22 @@ if r == 0 and g == 0 and b == 0 :
     c = m = y = 0
     black = 1
 else :
-    r = r/255
-    g = g/255
-    b = b/255
+    red = r/255
+    green = g/255
+    blue = b/255
 
-    max = r
-    if g > max :
-        max = g
+    max = red
+    if green > max :
+        max = green
 
-    if b > max :
-        max = b
+    if blue > max :
+        max = blue
 
     white = max
 
-    c = (white - r) / white
-    m = (white - g) / white
-    y = (white - b) / white
+    c = (white - red) / white
+    m = (white - green) / white
+    y = (white - blue) / white
 
     black = 1 - white
 

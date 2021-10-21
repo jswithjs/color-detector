@@ -47,12 +47,36 @@ cv2.setMouseCallback('image', draw_function)
 
 while True:
 	cv2.imshow('image', img)
+
+	if r == 0 and g == 0 and b == 0 :
+			c = m = y = 0
+			black = 1
+	else :
+			red = r/255
+			green = g/255
+			blue = b/255
+
+			max = red
+			if green > max :
+				max = green
+
+			if blue > max :
+				max = blue
+
+			white = max
+
+			c = (white - red) / white
+			m = (white - green) / white
+			y = (white - blue) / white
+
+			black = 1 - white
+
 	if clicked:
 		#cv2.rectangle(image, startpoint, endpoint, color, thickness)-1 fills entire rectangle 
 		cv2.rectangle(img, (20,20), (600,60), (b,g,r), -1)
 
 		#Creating text string to display( Color name and RGB values )
-		text = get_color_name(r,g,b) + ' R=' + str(r) + ' G=' + str(g) + ' B=' + str(b)
+		text = get_color_name(r,g,b) + ' C=' + str(c) + ' M=' + str(m) + ' Y=' + str(y) + ' K=' + str(black)
 		#cv2.putText(img,text,start,font(0-7),fontScale,color,thickness,lineType )
 		cv2.putText(img, text, (50,50), 2,0.8, (255,255,255),2,cv2.LINE_AA)
 
