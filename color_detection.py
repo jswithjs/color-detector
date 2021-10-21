@@ -65,17 +65,22 @@ while True:
 
 			white = max
 
-			c = (white - red) / white
-			m = (white - green) / white
-			y = (white - blue) / white
+			c = round(((white - red) / white) * 100)
+			m = round(((white - green) / white) * 100)	
+			y = round(((white - blue) / white) * 100)
 
-			black = 1 - white
+			black = round((1 - white) * 100)
 
 	if clicked:
 		#cv2.rectangle(image, startpoint, endpoint, color, thickness)-1 fills entire rectangle 
 		cv2.rectangle(img, (20,20), (600,60), (b,g,r), -1)
 
 		#Creating text string to display( Color name and RGB values )
+
+		# print("c = " + str(c), "m = "  + str(m), "m = " + str(y), "k = " + str(black))
+
+		print('r =' + str(r), "g = " + str(g), "b = " + str(b))
+
 		text = get_color_name(r,g,b) + ' C=' + str(c) + ' M=' + str(m) + ' Y=' + str(y) + ' K=' + str(black)
 		#cv2.putText(img,text,start,font(0-7),fontScale,color,thickness,lineType )
 		cv2.putText(img, text, (50,50), 2,0.8, (255,255,255),2,cv2.LINE_AA)
