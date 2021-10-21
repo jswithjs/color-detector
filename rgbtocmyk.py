@@ -9,7 +9,7 @@ def RGBtoCMYK(r, g, b):
     args: (int, int, int)
     ret : (int, int, int, int)
     """
-    if r & g & b == 0 :
+    if r | g | b == 0:
         return (0, 0, 0, 1)
 
     percentile = lambda x: x / 255
