@@ -1,33 +1,47 @@
-from operator import mul
+import numpy as np
+np.seterr(divide='ignore', invalid='ignore')
 
-def RGBtoCMYK(r, g, b):
-    """
-    RGMtoCMYK
+def percentage(i, c):
+    print(i, c)
+    r  = i
+    r /= sum(c)
+    r *= 100
+    print(r)
+    r = round(r)
+    r = r.__str__()
+    r += '%'
+    return r
 
-    Converts an RGB Palette to a CMYK Palette
-
-    args: (int, int, int)
-    ret : (int, int, int, int)
-    """
-    if r | g | b == 0:
-        return (0, 0, 0, 1)
-
-    percentile = lambda x: x / 255
-
-    red   = percentile(r)
-    green = percentile(g)
-    blue  = percentile(b)
-    white = max([red, green, blue])
-
-    build_color = lambda x: round(  \
-        mul(                        \
-            (white - x) / white,    \
-            100                     \
-    ))
+def rImage(bgr):
     
-    c = build_color(red)
-    m = build_color(green)
-    y = build_color(blue)
-    k = round((1 - white) * 100)
+    bgr = bgr / 255
 
-    return (c, m, y, k)
+    K = 1 - np.max(bgr, axis=2)
+    C = (1 - bgr[..., 2] - K) / (1 - K)
+    M = (1 - bgr[..., 1] - K) / (1 - K)
+    Y = (1 - bgr[..., 0] - K) / (1 - K)
+    
+    C = C[~np.isnan(C)]
+    M = M[~np.isnan(M)]
+    Y = Y[~np.isnan(Y)]
+    K = K[~np.isnan(K)]
+
+    # C = (C * 255).astype(np.uint8)
+    # M = (M * 255).astype(np.uint8)
+    # Y = (Y * 255).astype(np.uint8)
+    # K = (K * 255).astype(np.uint8)
+
+    C = C.flatten()
+    M = M.flatten()
+    Y = Y.flatten()
+    K = K.flatten()
+
+    CMYK = list(map(np.average, [C, M, Y, K]))
+    [C, M, Y, K] = CMYK
+    ret = {
+        'C': percentage(C, CMYK),
+        'M': percentage(M, CMYK),
+        'Y': percentage(Y, CMYK),
+        'K': percentage(K, CMYK)
+    }
+    return ret
