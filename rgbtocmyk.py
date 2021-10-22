@@ -1,28 +1,42 @@
-r = int(input("r"))
-g = int(input("g"))
-b = int(input("b"))
+import numpy as np
+np.seterr(divide='ignore', invalid='ignore')
 
-if r == 0 and g == 0 and b == 0 :
-    c = m = y = 0
-    black = 1
-else :
-    red = r/255
-    green = g/255
-    blue = b/255
+def percentage(i, c):
+    print(i, c)
+    r  = i
+    r /= sum(c)
+    r *= 100
+    print(r)
+    r = round(r)
+    r = r.__str__()
+    r += '%'
+    return r
 
-    max = red
-    if green > max :
-        max = green
+def rImage(bgr):
+    
+    bgr = bgr / 255
 
-    if blue > max :
-        max = blue
+    K = 1 - np.max(bgr, axis=2)
+    C = (1 - bgr[..., 2] - K) / (1 - K)
+    M = (1 - bgr[..., 1] - K) / (1 - K)
+    Y = (1 - bgr[..., 0] - K) / (1 - K)
+    
+    C = C[~np.isnan(C)]
+    M = M[~np.isnan(M)]
+    Y = Y[~np.isnan(Y)]
+    K = K[~np.isnan(K)]
 
-    white = max
+    C = C.flatten()
+    M = M.flatten()
+    Y = Y.flatten()
+    K = K.flatten()
 
-    c = (white - red) / white
-    m = (white - green) / white
-    y = (white - blue) / white
-
-    black = 1 - white
-
-    print("c = " + str(c), "m = "  + str(m), "m = " + str(y), "k = " + str(black))
+    CMYK = list(map(np.average, [C, M, Y, K]))
+    [C, M, Y, K] = CMYK
+    ret = {
+        'C': percentage(C, CMYK),
+        'M': percentage(M, CMYK),
+        'Y': percentage(Y, CMYK),
+        'K': percentage(K, CMYK)
+    }
+    return ret
