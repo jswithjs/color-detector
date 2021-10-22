@@ -26,11 +26,6 @@ def rImage(bgr):
     Y = Y[~np.isnan(Y)]
     K = K[~np.isnan(K)]
 
-    # C = (C * 255).astype(np.uint8)
-    # M = (M * 255).astype(np.uint8)
-    # Y = (Y * 255).astype(np.uint8)
-    # K = (K * 255).astype(np.uint8)
-
     C = C.flatten()
     M = M.flatten()
     Y = Y.flatten()
