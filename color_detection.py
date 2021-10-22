@@ -1,4 +1,3 @@
-from functools import cmp_to_key
 import cv2
 import pandas as pd
 import rgbtocmyk
