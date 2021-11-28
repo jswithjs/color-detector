@@ -1,4 +1,5 @@
 from multiprocessing import Pool
+from pprint import pprint
 from collections import Counter
 import cv2
 import numpy as np
@@ -14,7 +15,7 @@ nodes = df_nodes[..., (3, 4, 5)]
 names = df_nodes[..., 1]
 hex_names = df_nodes[..., 2]
 
-img = cv2.imread('pic1.jpg')
+img = cv2.imread('pic3.jpg')
 img = cv2.resize(img, (800, 600))
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 img = img.reshape((img.shape[0] * img.shape[1], 3))
@@ -36,7 +37,8 @@ def hex_nearest_match(h):
 	h_I = ordl(h)
 	lb = hex_names[hex_names < h][-1]
 	lb_I = ordl(lb)
-	ub = hex_names[hex_names > h][0]
+	ub = hex_names[hex_names > h]
+	ub = ub[0] if len(ub) != 0 else "#000000"
 	ub_I = ordl(ub)
 	if h_I - lb_I < ub_I - h_I:
 		return lb
@@ -48,9 +50,12 @@ def gname(x):
 
 res = list(map(rgb_to_hex, img))
 with Pool(100) as p:
-	resc = list(map(hex_nearest_match, res))
+	resc = list(p.map(hex_nearest_match, res))
 
-c = Counter(resc)
+c = Counter(res)
 r = {
-	gname(a): b 
+	gname(a): b
 	for a, b in c.most_common()}
+
+pprint(r)
+pprint(len(r))

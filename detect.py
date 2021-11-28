@@ -21,7 +21,7 @@ def prep_image(raw_img):
 def color_analysis(img):
     clf = KMeans(n_clusters = 10)
     color_labels_l = clf.fit_predict(img)
-    center_colors = clf.cluster_centers_    
+    center_colors = clf.cluster_centers_
     counts = Counter(color_labels_l)
     ordered_colors = [center_colors[i] for i in counts.keys()]
     hex_colors = [rgb_to_hex(ordered_colors[i]) for i in counts.keys()]    
