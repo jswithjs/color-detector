@@ -18,15 +18,15 @@ def prep_image(raw_img):
     modified_img = modified_img.reshape(modified_img.shape[0]*modified_img.shape[1], 3)
     return modified_img
 
-def color_analysis(img):
-    clf = KMeans(n_clusters = 10)
+def color_analysis(img, n):
+    clf = KMeans(n_clusters = n)
     color_labels_l = clf.fit_predict(img)
     center_colors = clf.cluster_centers_
     counts = Counter(color_labels_l)
     ordered_colors = [center_colors[i] for i in counts.keys()]
     hex_colors = [rgb_to_hex(ordered_colors[i]) for i in counts.keys()]    
-    print(hex_colors)
-    print(counts)
+    return { hex_colors[a]: counts[a] for a in range(0, n) }
 
 modified_image = prep_image(image)
-color_analysis(modified_image)
+a = color_analysis(modified_image, 10)
+print(a)

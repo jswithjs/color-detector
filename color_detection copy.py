@@ -25,10 +25,8 @@ def get_name(RGB):
 ncount = lambda x: np.count_nonzero(x)
 
 def get_color_final(img):
-	
-	
 	black = [0, 0, 0]
-	
+
 	results[get_name(black)] += ncount(img == black)
 	img = img[img != black]
 	
