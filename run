@@ -1,0 +1,6 @@
+pip3 install "uvicorn[standard]"
+pip3 install fastapi
+pip3 install numpy
+pip3 install opencv-python
+pip3 install scikit-learn
+uvicorn detect:app --reload --host 0.0.0.0 --port 80
