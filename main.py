@@ -34,7 +34,7 @@ async def prep_image(raw_img):
     return modified_img
 
 @app.post("/")
-async def color_analysis(img = File(...), n = Form(...)):
+async def color_analysis(img: bytes = File(...), n = Form(...)):
     img = await prep_image(img)
     n   = int(n)
     clf = KMeans(n_clusters = n)
