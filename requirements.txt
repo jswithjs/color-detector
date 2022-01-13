@@ -1,7 +1,8 @@
 colorthief==0.2.1
 fastapi==0.71.0
 numpy==1.22.0
-opencv-python==4.5.5.62
+opencv-python
+opencv-python-headless
 pandas==1.3.5
 Pillow==9.0.0
 scikit-learn==1.0.2
