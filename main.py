@@ -1,22 +1,10 @@
 from fastapi import FastAPI, Form, File
 from collections import Counter
-from base64 import b64decode
 import numpy as np
 from sklearn.cluster import KMeans
 import cv2
-import pandas as pd
 
 app = FastAPI()
-
-df = pd.read_csv(
-		'colors.csv',
-		names = ['color', 'color_name', 'hex', 'R', 'G', 'B'],
-		header=None)
-
-df_nodes   =  df.to_numpy()
-names      =  df_nodes[..., 1]
-hex_names  =  df_nodes[..., 2]
-name_hex   =  df_nodes[..., 2].tolist()
 
 def rgb_to_hex(rgb_color):
     hex_color = "#"
