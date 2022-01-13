@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Form
+from fastapi import FastAPI, Form, File
 from collections import Counter
 from base64 import b64decode
 import numpy as np
@@ -34,7 +34,7 @@ async def prep_image(raw_img):
     return modified_img
 
 @app.post("/")
-async def color_analysis(img = Form(...), n = Form(...)):
+async def color_analysis(img = File(...), n = Form(...)):
     img = await prep_image(img)
     n   = int(n)
     clf = KMeans(n_clusters = n)
