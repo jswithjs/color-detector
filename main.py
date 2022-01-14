@@ -38,7 +38,7 @@ async def process(image_buffer, n):
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware
-    , allow_origin=["*"])
+    , allow_origins=["*"])
 
 
 @app.post('/')
