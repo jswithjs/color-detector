@@ -1,8 +1,9 @@
 from PIL import Image
 import numpy as np
 import cv2
-from lib import get_palette
+from lib import get_palette, get_color
 from fastapi import FastAPI, File, Form
+from fastapi.middleware.cors import CORSMiddleware
 
 def rgb_to_hex(rgb_color):
     hex_color = "#"
@@ -11,13 +12,17 @@ def rgb_to_hex(rgb_color):
         hex_color += ("{:02x}".format(i))
     return hex_color
 
-async def process(image_buffer, n):
+async def process(image_buffer, n): 
     img = np.frombuffer(image_buffer, dtype = np.uint8)
     img = cv2.imdecode(img, flags=cv2.IMREAD_COLOR)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     IMAGE  = Image.fromarray(img)
     IMAGE  = IMAGE.resize((1280, 720))
+    if n == 1:
+        return {
+            rgb_to_hex(get_color(IMAGE)): 100
+        }
     _, p_map = get_palette(IMAGE, n, 10)
     
     ret = {}
@@ -31,6 +36,10 @@ async def process(image_buffer, n):
     return ret
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware
+    , allow_origin=["*"])
+
 
 @app.post('/')
 async def home(img: bytes = File(...), n: int = Form(...)):
