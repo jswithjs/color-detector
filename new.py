@@ -1,43 +1,8 @@
-from colorthief import ColorThief
-import pandas as pd
-
-color_thief = ColorThief('pic1.jpg')
-# get the dominant color
-dominant_color = color_thief.get_color(quality=10)
-palette = color_thief.get_palette(color_count=100)
-
-df = pd.read_csv(
-		'colors.csv',
-		names = ['color', 'color_name', 'hex', 'R', 'G', 'B'],
-		header=None)
-
-df_nodes   =  df.to_numpy()
-names      =  df_nodes[..., 1]
-hex_names  =  df_nodes[..., 2]
-name_hex   =  df_nodes[..., 2].tolist()
-
-def hex_nearest_match(h):
-    if h in hex_names:
-        return h
-    
-    h_I = int(h[1: ], 16)
-    
-    lb = hex_names[hex_names < h]
-    ub = hex_names[hex_names > h]
-    
-    if lb.shape[0]:
-        res =  ub[0]
-    elif ub.shape[0]:
-        res =  lb[-1]
-    else:    
-        ub_I = int(ub[1: ], 16)
-        lb_I = int(lb[1: ], 16)
-        if h_I - lb_I < ub_I - h_I:
-            res =  lb
-        else:
-            res = ub
-    
-    return names[name_hex.index(res)]
+from PIL import Image
+import numpy as np
+import cv2
+from lib import get_palette
+from fastapi import FastAPI, File, Form
 
 def rgb_to_hex(rgb_color):
     hex_color = "#"
@@ -46,6 +11,38 @@ def rgb_to_hex(rgb_color):
         hex_color += ("{:02x}".format(i))
     return hex_color
 
-c = list(map(rgb_to_hex, palette))
-v = list(map(hex_nearest_match, c))
-print(v)
+async def process(image_buffer, n):
+    img = np.frombuffer(image_buffer, dtype = np.uint8)
+    img = cv2.imdecode(img, flags=cv2.IMREAD_COLOR)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+    IMAGE  = Image.fromarray(img)
+    IMAGE  = IMAGE.resize((1280, 720))
+    _, p_map = get_palette(IMAGE, n, 10)
+    
+    ret = {}
+    for i in p_map.vboxes.contents:
+        color_name = rgb_to_hex(i['color'])
+        ret[color_name] = i['vbox'].count
+    
+    FINAL = sum(ret.values())
+    for i in ret:
+        ret[i] = round((ret[i] / FINAL) * 100, 2)
+    return ret
+
+app = FastAPI()
+
+@app.post('/')
+async def home(img: bytes = File(...), n: int = Form(...)):
+    try:
+        c = await process(img, n)
+        return {
+            "Status": 1
+            , "data": c
+        }
+    except:
+        return {"Error": "Server Error"}
+
+@app.get("/")
+async def home():
+    return { "server": "up and Running!" }
