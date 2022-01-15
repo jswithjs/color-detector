@@ -4,6 +4,15 @@ from lib import get_palette, get_color
 from fastapi import FastAPI, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 
+def arc(s):
+    ps = s[1]
+    ps = ps.vboxes.contents
+    max = ps[0]['vbox'].count
+    for i in ps:
+        if i['vbox'].count > max:
+            max = i
+    return i['color']
+
 def rgb_to_hex(rgb_color):
     hex_color = "#"
     for i in rgb_color:
@@ -15,8 +24,14 @@ async def process(image_buffer, n):
     IMAGE  = Image.open(io.BytesIO(image_buffer))
     IMAGE  = IMAGE.resize((1280, 720))
     if n == 1:
+        cp = get_palette(IMAGE, 2, 10)
+        cp = arc(cp)
+        cp = rgb_to_hex(cp)
         return {
-            rgb_to_hex(get_color(IMAGE)): 100
+            "status": "1"
+            , "data": {
+                cp: "100.00"
+            }
         }
     _, p_map = get_palette(IMAGE, n, 10)
     
