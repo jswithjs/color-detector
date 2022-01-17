@@ -1,17 +1,8 @@
 from PIL import Image
 import io
 from lib import get_palette, get_color
-from fastapi import FastAPI, File, Form
+from fastapi import FastAPI, File
 from fastapi.middleware.cors import CORSMiddleware
-
-def arc(s):
-    ps = s[1]
-    ps = ps.vboxes.contents
-    max = ps[0]['vbox'].count
-    for i in ps:
-        if i['vbox'].count > max:
-            max = i
-    return i['color']
 
 def rgb_to_hex(rgb_color):
     hex_color = "#"
@@ -20,20 +11,11 @@ def rgb_to_hex(rgb_color):
         hex_color += ("{:02x}".format(i))
     return hex_color
 
-async def process(image_buffer, n): 
+async def process(image_buffer):
     IMAGE  = Image.open(io.BytesIO(image_buffer))
     IMAGE  = IMAGE.resize((1280, 720))
-    if n == 1:
-        cp = get_palette(IMAGE, 2, 10)
-        cp = arc(cp)
-        cp = rgb_to_hex(cp)
-        return {
-            "status": "1"
-            , "data": {
-                cp: "100.00"
-            }
-        }
-    _, p_map = get_palette(IMAGE, n, 10)
+    TOTAL  = 1280 * 720
+    _, p_map = get_palette(IMAGE, 0xff, 10)
     
     ret = {}
     for i in p_map.vboxes.contents:
@@ -41,20 +23,23 @@ async def process(image_buffer, n):
         ret[color_name] = i['vbox'].count
     
     FINAL = sum(ret.values())
+    n_ret = {}
     for i in ret:
-        ret[i] = round((ret[i] / FINAL) * 100, 2)
-    return ret
+        tmp = round((ret[i] / FINAL) * 100, 2)
+        if tmp > 0.05:
+            print(tmp)
+            n_ret[i] = tmp
+    return n_ret
 
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware
     , allow_origins=["*"])
 
-
 @app.post('/')
-async def home(img: bytes = File(...), n: int = Form(...)):
+async def home(img: bytes = File(...)):
     try:
-        c = await process(img, n)
+        c = await process(img)
         return {
             "Status": 1
             , "data": c
