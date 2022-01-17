@@ -13,8 +13,7 @@ def rgb_to_hex(rgb_color):
 
 async def process(image_buffer):
     IMAGE  = Image.open(io.BytesIO(image_buffer))
-    IMAGE  = IMAGE.resize((1280, 720))
-    TOTAL  = 1280 * 720
+    ACCURACY = 0.05
     _, p_map = get_palette(IMAGE, 0xff, 10)
     
     ret = {}
@@ -26,7 +25,7 @@ async def process(image_buffer):
     n_ret = {}
     for i in ret:
         tmp = round((ret[i] / FINAL) * 100, 2)
-        if tmp > 0.05:
+        if tmp > ACCURACY:
             print(tmp)
             n_ret[i] = tmp
     return n_ret
