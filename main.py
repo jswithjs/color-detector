@@ -40,7 +40,7 @@ async def home(img: bytes = File(...)):
     try:
         c = await process(img)
         return {
-            "Status": 1
+            "status": 1
             , "data": c
         }
     except Exception as e:
